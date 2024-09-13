@@ -1,1 +1,5 @@
-install.packages("revtools")
+# Install the package
+
+# install.packages("revtools")
+
+library(revtools)
