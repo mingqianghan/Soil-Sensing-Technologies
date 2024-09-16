@@ -2,7 +2,6 @@
 # revtools GitHub repository: https://github.com/mjwestgate/revtools
 library(revtools)
 
-
 # Set the working directory to the folder where the current script is located
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
@@ -13,7 +12,10 @@ current_dir <- getwd()
 files <- c(
   file.path(current_dir, "WebofScience.bib"),
   file.path(current_dir, "Scopus.bib"),
-  file.path(current_dir, "IEEE.bib")
+  file.path(current_dir, "IEEE.bib"),
+  file.path(current_dir, "Ovid.bib"),
+  file.path(current_dir, "PubMed.bib"),
+  file.path(current_dir, "WileyOnline.bib")
 )
 
 # Initialize a list to store bibliographic data from each file
@@ -42,14 +44,29 @@ combined_data <- do.call(rbind, data_list)
 # Print the total number of literature entries after combining
 cat("Total number of combined literature entries:", nrow(combined_data), "\n")
 
+# Filter out entries without a DOI
+combined_data_with_doi <- combined_data[!is.na(combined_data$doi) & combined_data$doi != "", ]
+
+# Print the number of entries with a DOI
+cat("Number of entries with DOI:", nrow(combined_data_with_doi), "\n")
+
 # Check for duplicate entries and extract unique references
-x_check <- find_duplicates(combined_data)
-x_unique <- extract_unique_references(combined_data, matches = x_check)
+x_check <- find_duplicates(combined_data_with_doi)
+data_unique <- extract_unique_references(combined_data_with_doi, matches = x_check)
 
-# Print the total number of unique literature entries
-cat("Total number of unique literature entries:", nrow(x_unique), "\n")
+# Print the total number of unique literature entries after removing duplicates
+cat("Total number of unique literature entries with DOI:", nrow(data_unique), "\n")
 
+# Define a vector of keywords to search for in the abstract
+keywords <- c("sensor", "measurement", "monitoring", "sensing")
 
-# Launch a graphical interface to screen the topics in the imported data
-# screen_topics(data)
+# Create a pattern that combines the keywords for searching
+pattern <- paste(keywords, collapse = "|")
+
+# Filter articles that contain any of the keywords in the abstract
+filtered_data <- data_unique[
+  grepl(pattern, data_unique$abstract, ignore.case = TRUE), ]
+
+# Print the number of entries after filtering by keywords in abstract
+cat("Number of entries after filtering by keywords in abstract:", nrow(filtered_data), "\n")
 
