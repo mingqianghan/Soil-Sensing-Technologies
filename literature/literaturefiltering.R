@@ -87,5 +87,5 @@ filtered_combined_data <- data_unique[grepl(combined_query,
 # Print the number of entries after applying the OR logic query
 cat("Number of entries after filtering:", nrow(filtered_combined_data), "\n")
 
-# Optionally, save the filtered results for further review
-# write_bibliography(filtered_combined_data, file = "filtered_combined_literature_query.bib")
+# Optionally, save the filtered results
+write_bibliography(filtered_combined_data, file = "filtered_combined_literature_query.bib")
